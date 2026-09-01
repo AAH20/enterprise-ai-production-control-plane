@@ -1,0 +1,63 @@
+{
+  "title": "Enterprise AI Production Control Plane",
+  "uid": "ai-production-control-plane",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "tags": ["ai-infrastructure", "llm-observability", "gpu-finops"],
+  "templating": {
+    "list": [
+      {
+        "name": "tenant",
+        "type": "query",
+        "label": "Tenant",
+        "query": "label_values(ai_workflow_total, tenant)",
+        "includeAll": true
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Cost per Successful Workflow",
+      "targets": [{"expr": "sum(rate(ai_workflow_cost_usd_sum[5m])) / clamp_min(sum(rate(ai_workflow_success_total[5m])), 1)", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Workflow Margin",
+      "targets": [{"expr": "sum(rate(ai_workflow_value_usd_sum[5m])) - sum(rate(ai_workflow_cost_usd_sum[5m]))", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "p95 Workflow Latency",
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le, provider) (rate(ai_workflow_latency_ms_bucket[5m])))", "legendFormat": "{{provider}}", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "GPU Utilization and Allocation",
+      "targets": [
+        {"expr": "avg by (cluster, gpu_profile) (DCGM_FI_DEV_GPU_UTIL)", "legendFormat": "util {{cluster}} {{gpu_profile}}", "refId": "A"},
+        {"expr": "avg by (cluster, gpu_profile) (ai_gpu_allocated_ratio)", "legendFormat": "allocated {{cluster}} {{gpu_profile}}", "refId": "B"}
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Quality and Completion",
+      "targets": [
+        {"expr": "avg by (model) (ai_evaluation_quality_score)", "legendFormat": "quality {{model}}", "refId": "A"},
+        {"expr": "sum(rate(ai_workflow_success_total[5m])) / clamp_min(sum(rate(ai_workflow_total[5m])), 1)", "legendFormat": "completion", "refId": "B"}
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+    }
+  ]
+}
+

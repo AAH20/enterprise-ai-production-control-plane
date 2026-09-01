@@ -1,0 +1,18 @@
+{
+  "schema": "aicontrol.release-policy.v1",
+  "hard_gates": {
+    "task_completion_rate_min": 0.95,
+    "quality_regression_max": 0.02,
+    "p95_latency_regression_max": 0.10,
+    "cost_per_success_regression_max": 0.05,
+    "critical_open_incidents_max": 0,
+    "rollback_verified": true
+  },
+  "approval_required": [
+    "critical-workflow-provider-change",
+    "quality-floor-reduction",
+    "residency-policy-exception",
+    "automatic-write-action-expansion"
+  ]
+}
+

@@ -1,0 +1,46 @@
+{
+  "providers": [
+    {
+      "name": "azure-foundry",
+      "model": "frontier-large",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "infrastructure_per_hour": 0.0,
+      "capacity_rpm": 1000,
+      "base_latency_ms": 900,
+      "quality_score": 0.94,
+      "locality": "eu"
+    },
+    {
+      "name": "nvidia-nim-aks",
+      "model": "open-weight-70b",
+      "input_per_million": 0.0,
+      "output_per_million": 0.0,
+      "infrastructure_per_hour": 4.2,
+      "capacity_rpm": 450,
+      "base_latency_ms": 650,
+      "quality_score": 0.90,
+      "locality": "eu"
+    }
+  ],
+  "workload": {
+    "workflow_id": "claims-triage-88",
+    "tenant": "insurer-eu",
+    "input_tokens": 6000,
+    "output_tokens": 900,
+    "value_usd": 42.0,
+    "quality_floor": 0.89,
+    "latency_slo_ms": 1500,
+    "residency": "eu",
+    "criticality": "critical"
+  },
+  "telemetry": {
+    "latency_ms": 1600,
+    "quality_score": 0.93,
+    "success": false,
+    "gpu_utilization": 0.65,
+    "provider_error": true,
+    "provider": "azure-foundry"
+  },
+  "unavailable": ["azure-foundry"]
+}

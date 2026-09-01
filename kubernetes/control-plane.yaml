@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-production
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-control-plane
+  namespace: ai-production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-control-plane
+  template:
+    metadata:
+      labels:
+        app: ai-control-plane
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: ghcr.io/aah20/enterprise-ai-production-control-plane:0.1.0
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-control-plane
+  namespace: ai-production
+spec:
+  selector:
+    app: ai-control-plane
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ai-control-plane
+  namespace: ai-production
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: ai-control-plane
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ai-control-plane
+  namespace: ai-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ai-control-plane
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
+

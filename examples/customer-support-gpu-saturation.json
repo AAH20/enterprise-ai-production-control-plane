@@ -1,0 +1,62 @@
+{
+  "providers": [
+    {
+      "name": "azure-foundry",
+      "model": "frontier-large",
+      "input_per_million": 2.5,
+      "output_per_million": 10.0,
+      "infrastructure_per_hour": 0.0,
+      "capacity_rpm": 1000,
+      "base_latency_ms": 900,
+      "quality_score": 0.94,
+      "availability": 0.999,
+      "locality": "eu"
+    },
+    {
+      "name": "nvidia-nim-aks",
+      "model": "open-weight-70b",
+      "input_per_million": 0.0,
+      "output_per_million": 0.0,
+      "infrastructure_per_hour": 4.2,
+      "capacity_rpm": 450,
+      "base_latency_ms": 650,
+      "quality_score": 0.90,
+      "availability": 0.999,
+      "locality": "eu"
+    },
+    {
+      "name": "economy-api",
+      "model": "small-reasoning",
+      "input_per_million": 0.2,
+      "output_per_million": 0.8,
+      "infrastructure_per_hour": 0.0,
+      "capacity_rpm": 3000,
+      "base_latency_ms": 300,
+      "quality_score": 0.82,
+      "availability": 0.9995,
+      "locality": "global"
+    }
+  ],
+  "workload": {
+    "workflow_id": "refund-approval-1042",
+    "tenant": "retail-eu",
+    "input_tokens": 4200,
+    "output_tokens": 600,
+    "value_usd": 18.0,
+    "quality_floor": 0.88,
+    "latency_slo_ms": 1200,
+    "residency": "eu",
+    "criticality": "standard"
+  },
+  "telemetry": {
+    "latency_ms": 2100,
+    "quality_score": 0.91,
+    "success": true,
+    "gpu_utilization": 0.97,
+    "retries": 1,
+    "cache_hit": false,
+    "provider_error": false,
+    "provider": "nvidia-nim-aks"
+  },
+  "unavailable": []
+}
